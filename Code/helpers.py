@@ -159,10 +159,52 @@ VOICE = os.environ.get("TTS_VOICE", "Samantha")
 RATE = int(os.environ.get("TTS_RATE", "185"))
 
 
+# Your own recordings: put one file per narration line in Code/my_voice/,
+# named after its key in narration.py (title.m4a, w1.m4a, ... z6.m4a).
+# Any line with a recording uses it; lines without one fall back to `say`.
+MY_VOICE_DIR = Path(__file__).resolve().parent / "my_voice"
+AUDIO_EXTS = (".m4a", ".wav", ".mp3", ".aiff", ".aac", ".caf")
+
+
+def _narration_key(text: str):
+    from narration import N
+    for k, v in N.items():
+        if v == text:
+            return k
+    return None
+
+
+def my_recording(key):
+    for ext in AUDIO_EXTS:
+        f = MY_VOICE_DIR / f"{key}{ext}"
+        if f.exists():
+            return f
+    return None
+
+
+def using_own_voice() -> bool:
+    from narration import N
+    return all(my_recording(k) for k in N)
+
+
 def tts(text: str) -> tuple[str, float]:
     VOICE_DIR.mkdir(exist_ok=True)
-    key = hashlib.md5(f"{VOICE}|{RATE}|{text}".encode()).hexdigest()[:12]
-    path = VOICE_DIR / f"{key}.wav"
+    rec = my_recording(_narration_key(text))
+    if rec is not None:
+        # Convert to WAV, trim silence at both ends, even out the volume
+        stamp = f"{rec.name}|{rec.stat().st_mtime_ns}"
+        path = VOICE_DIR / f"own_{hashlib.md5(stamp.encode()).hexdigest()[:12]}.wav"
+        if not path.exists():
+            trim = ("silenceremove=start_periods=1:start_threshold=-45dB,"
+                    "areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
+                    "highpass=f=80,loudnorm=I=-18:TP=-2")
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(rec), "-af", trim,
+                            "-ac", "1", "-ar", "44100", "-c:a", "pcm_s16le", str(path)],
+                           check=True)
+        print(f"[voice] using your recording: {rec.name}")
+    else:
+        key = hashlib.md5(f"{VOICE}|{RATE}|{text}".encode()).hexdigest()[:12]
+        path = VOICE_DIR / f"{key}.wav"
     if not path.exists():
         subprocess.run(["say", "-v", VOICE, "-r", str(RATE), "-o", str(path),
                         "--file-format=WAVE", "--data-format=LEI16@44100", text],

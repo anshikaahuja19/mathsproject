@@ -606,7 +606,8 @@ class Summary(NarratedScene):
         lines = VGroup(
             prose(f"Created by {STUDENT_NAME}  (ID: {STUDENT_ID})", 28, COL_SCALAR),
             prose("Animation: Manim Community v0.22 (Python) — source code in the Code/ folder", 24),
-            prose("Narration: synthetic voice, macOS text-to-speech (\"Samantha\")", 24),
+            prose(f"Narration: voiced by {STUDENT_NAME}" if using_own_voice() else
+                  "Narration: synthetic voice, macOS text-to-speech (\"Samantha\")", 24),
             prose("Music: none", 24),
             prose("AI disclosure: script, storyboard and Manim code drafted with Claude (Anthropic);", 24, GREY),
             prose("every calculation verified independently (Code/verify_math.py)", 24, GREY),
