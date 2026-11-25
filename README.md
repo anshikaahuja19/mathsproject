@@ -43,6 +43,7 @@ Requirements: macOS, Python 3.13, `brew install pango pkg-config ffmpeg`.
 python3.13 -m venv .venv && .venv/bin/pip install -r Code/requirements.txt
 .venv/bin/python Code/split_recording.py   # cut my recording into one clip per line
 ./Code/build.sh      # renders all scenes at 1080p, outputs Matrices_Video.mp4
+MUSIC_VOL=0.03 ./Code/assemble.sh   # change only the music (style/volume), no re-render
 .venv/bin/manim -pql Code/scenes.py Addition   # quick preview of one scene
 ```
 
@@ -52,5 +53,5 @@ python3.13 -m venv .venv && .venv/bin/pip install -r Code/requirements.txt
 
 - **Animation:** [Manim Community](https://www.manim.community/) v0.22.1 (Python)
 - **Narration:** voiced by Anshika Ahuja (recorded in one take, `Code/my_voice/full.m4a`; split into lines with `Code/split_recording.py`, long pauses shortened and played at 1.2× speed with pitch unchanged)
-- **Music:** none
+- **Music:** original soft piano track generated with `Code/make_music.py` (NumPy/SciPy), mixed at a constant low level under the narration
 - **AI tools used:** Claude (Anthropic) helped draft the script, the storyboard and the Manim/Python code. Every equation and calculation was checked independently by hand and with `Code/verify_math.py`.
