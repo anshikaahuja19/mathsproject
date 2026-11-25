@@ -5,7 +5,7 @@
 
 | Deliverable | File |
 |---|---|
-| Final video (1080p, 16:9, ~6 min) | [`Matrices_Video.mp4`](Matrices_Video.mp4) |
+| Final video (1080p, 16:9, 6:32) | [`Matrices_Video.mp4`](Matrices_Video.mp4) |
 | Animation source code | [`Code/`](Code/) |
 | Narration script | [`Code/NARRATION_SCRIPT.md`](Code/NARRATION_SCRIPT.md) |
 | Storyboard | see below |
@@ -37,10 +37,11 @@ T = [2 1; 0 1]   T(1,2) = (4,2)
 
 ## How to rebuild the video
 
-Requirements: macOS (narration uses the built-in `say` voice), Python 3.13, `brew install pango pkg-config ffmpeg`.
+Requirements: macOS, Python 3.13, `brew install pango pkg-config ffmpeg`.
 
 ```bash
 python3.13 -m venv .venv && .venv/bin/pip install -r Code/requirements.txt
+.venv/bin/python Code/split_recording.py   # cut my recording into one clip per line
 ./Code/build.sh      # renders all scenes at 1080p, outputs Matrices_Video.mp4
 .venv/bin/manim -pql Code/scenes.py Addition   # quick preview of one scene
 ```
@@ -50,6 +51,6 @@ python3.13 -m venv .venv && .venv/bin/pip install -r Code/requirements.txt
 ## Credits & AI disclosure
 
 - **Animation:** [Manim Community](https://www.manim.community/) v0.22.1 (Python)
-- **Narration:** synthetic voice from macOS text-to-speech ("Samantha")
+- **Narration:** voiced by Anshika Ahuja (recorded in one take, `Code/my_voice/full.m4a`; split into lines with `Code/split_recording.py`, long pauses shortened and played at 1.2× speed with pitch unchanged)
 - **Music:** none
 - **AI tools used:** Claude (Anthropic) helped draft the script, the storyboard and the Manim/Python code. Every equation and calculation was checked independently by hand and with `Code/verify_math.py`.
